@@ -1,0 +1,176 @@
+---
+title: "Apriori algorithm in Groceries dataset"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: scroll
+    theme: simplex
+    social: menu
+    source_code: embed
+---
+
+
+```{r setup, include=FALSE}
+library(RColorBrewer)
+library(data.table)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(stringr)
+library(DT)
+library(plotly)
+library(arules)
+library(arulesViz)
+library(visNetwork)
+library(igraph)
+library(kableExtra)
+```
+
+# About Groceries Dataset
+
+
+### Dataset Description
+```{r}
+print("The Groceries data set contains 1 month (30 days) of real-world point-of-sale transaction data from a typical local grocery outlet. The data set contains 9835 transactions and the items are aggregated to 169 categories.")
+
+```
+Link to [Statistical Inference]
+
+# Statistical Inference
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### DataStructure
+```{r}
+d = data("Groceries")
+str(Groceries)
+```
+
+### Transaction
+```{r}
+inspect(head(Groceries))
+```
+
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+
+### Summary
+```{r}
+summary(Groceries)
+```
+
+### Length of transactions
+
+```{r}
+length(head(transactions))
+```
+
+
+Link to [Apriori Algorthm]
+
+# Apriori Algorthm
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Apply apriori algorthm
+```{r}
+rules=apriori(Groceries, parameter = list(support = 0.002,confidence=0.5))
+```
+
+
+
+###One-dimensional tables
+```{r}
+head(round(itemFrequency(Groceries),3))
+head(itemFrequency(Groceries,type='absolute'))
+```
+###Two - dimensional tables
+```{r}
+cctab=crossTable(Groceries, measure='count',sort=TRUE)
+head(round(cctab))
+```
+
+###support measure
+```{r}
+stab=crossTable(Groceries, measure='support',sort=TRUE)
+head(round(stab,1))
+```
+
+###Left measure
+```{r}
+ltab=crossTable(Groceries, measure='lift',sort=TRUE)
+head(round(ltab,1))
+```
+
+
+
+Link to [About Groceries Dataset]
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+### Distribution of transaction
+
+```{r}
+groceries_trans=as(Groceries,"transactions")
+hist(size(groceries_trans),breaks=15,main="Transaction Length Distribution",xlab="Transaction Length")
+
+```
+
+### Frequent itemset
+```{r}
+arules::itemFrequencyPlot(Groceries, topN = 10, 
+                          col = brewer.pal(8, 'Pastel2'),
+                          main = 'Frequent Items',
+                          type = "relative",
+                          ylab = "Item Frequency (Relative)")
+```
+
+### Creating rules
+```{r}
+rules.groc=apriori(Groceries, parameter=list(support=0.006,confidence=0.25,minlen=2))
+```
+
+### Sorting rules by count
+```{r}
+rules.cou=sort(rules.groc,by='count',decreasing=TRUE)
+inspect(head(rules.cou))
+```
+
+
+### Sorting rules by confidence
+```{r}
+rules.con=sort(rules.groc,by='confidence',decreasing=TRUE)
+inspect(head(rules.con))
+```
+
+### Sorting rules by lift
+```{r}
+rules.lif=sort(rules.groc,by='lift',decreasing=TRUE)
+inspect(head(rules.lif))
+```
+
+### rules check
+```{r}
+inspect(rules.groc)
+```
+
+
+### Confidence of the groceries
+```{r}
+inspect(sort(sort(rules, by ="support"),by ="confidence")[1:5])
+plot(rules, measure=c("support", "confidence"), shading="lift", interactive=FALSE)
+```
+
+
+### igraph view
+
+```{r}
+itemset=eclat(Groceries, parameter = list(support=0.02,minlen=2))
+plot(itemset,method="graph")
+
+```
+
