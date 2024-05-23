@@ -1,0 +1,210 @@
+---
+title: "Tesla dataset Perform EDA"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: scroll
+    theme: simplex
+    social: menu
+    source_code: embed
+---
+
+```{r setup, include=FALSE}
+# R markdown Format for Flexible Dashboards
+library(flexdashboard)
+# Support Functions and Datasets
+library(MASS)
+#Graphics for R
+library(lattice)
+#Create Elegant Data Visualizations Using the Grammar of Graphics
+library(ggplot2)
+library(dplyr)
+library(readr)
+```
+
+# Introduction
+
+Column {data-width=1000}
+-----------------------------------------------------------------------
+
+### Dataset Description
+
+```{r}
+"Tesla, Inc. designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems in the United States, China, and internationally. It operates in two segments, Automotive, and Energy Generation and Storage."
+
+"The company was formerly known as Tesla Motors, Inc. and changed its name to Tesla, Inc. in February 2017. Tesla, Inc. was incorporated in 2003 and is headquartered in Austin, Texas."
+
+"The dataset includes the daily Tesla stock price."
+```
+
+### Attach dataset
+
+```{r}
+data=read.csv('C:\\Users\\India\\Desktop\\TSLA.csv')
+head(data)
+```
+
+### Assumption
+
+```{r}
+"In tesla share market rating that open and high has relationship when the open is high within end of the day it increase high of the day attribute"
+"In tesla share market rating that Close and high has relationship when the Close is high within end of the day it probabily high of the day attribute"
+"Volume is not decided with open or close attribute"
+```
+
+Link to [Statistical Inference]
+
+# Statistical Inference 
+
+Column {data-width=1000}
+-----------------------------------------------------------------------
+
+### Summary
+
+```{r}
+summary(data)
+"Summary is used to understand the variables in attributes."
+```
+
+### Structure of the dataset
+
+```{r}
+str(data)
+"Structure of the Tesla dataset"
+```
+
+### Check the data is null or not
+
+```{r}
+sum(is.na(data))
+d1=scale(data$Open)
+d2=scale(data$High)
+d3=scale(data$Low)
+d4=scale(data$Close)
+d5=scale(data$Volume)
+subd=data.frame(data$Date,d1,d2,d3,d4,d5)
+head(subd)
+"After Normalize the Tesla dataset"
+```
+
+Link to [EDA Part-1]
+
+# EDA Part-1
+
+Column {data-width=1000}
+-----------------------------------------------------------------------
+
+### subset for assumption of my dataset
+
+```{r}
+# subset for assumption
+subset1=data.frame(subd)
+head(subset1)
+'Subset for my assumption'
+```
+
+### Univariate Analysis
+
+```{r}
+#Open Attribute in TSLA dataset
+histogram(~subset1$d1,main='Open attribute in tesla',xlab='Open',ylab='Frequency')
+'When the open of the stack is not interested for the people to know the stack rate when above high, but people show interest when the stack is below zero'
+```
+
+### High Attribute
+```{r}
+# High Attribute in TSLA dataset
+histogram(~subset1$d2,main='High attribute in tesla',xlab='High',ylab='Frequency')
+'The High of the stack is not interested for the people to know the stack rate when above high, but people show interest when the stack is below average'
+```
+
+Column {data-width=900}
+-----------------------------------------------------------------------
+
+Link to [EDA Part-2]
+
+### Low Attribute
+```{r}
+# Low Attribute in TSLA dataset
+histogram(~subset1$d3,main='Low attribute in tesla',xlab='Low',ylab='Frequency')
+'The Low of the stack is not interested for the people to know the stack rate when above the average value, but people show interest when the stack is below average'
+```
+
+### Close Attribute
+```{r}
+# Close Attribute in TSLA dataset
+histogram(~subset1$d4,main='Close attribute in tesla',xlab='Close',ylab='Frequency')
+'The Close of the stack is not interested for the people to know the stack rate when above the average value, but people show interest when the stack is below average'
+```
+
+### Volume Attribute
+```{r}
+# Volume Attribute in TSLA dataset
+histogram(~subset1$d5,main='Volume attribute in tesla',xlab='Volume',ylab='Frequency')
+'The Volume of the stack is interested for the people to know the stack rate when below the average value, but people show interest when the stack is above average'
+```
+
+
+# EDA Part-2
+
+Column {data-width=1000}
+-----------------------------------------------------------------------
+
+### BiVariate Analysis
+
+```{r}
+
+plot(subset1$d2,subset1$d3,col=c(3),main='High vs Low stock',xlab='High stock',ylab='Low stock')
+'When the high of the stock is high then the low of the stack is high, It says that the value of the stock is related to eachother, it is positive correlation, stock is growing high day by day'
+```
+
+### High Attribute Vs Close Attribute
+
+```{r}
+plot(subset1$d2,subset1$d4,col=c(3),main='High vs Close stock',xlab='High stock',ylab='Close stock')
+'When the high of the stock is high then the Close of the stack is high, It says that the value of the stock is related to eachother, it is positive correlation, stock is growing high day by day and close stack is high'
+```
+
+### High Attribute Vs Volume Attribute
+
+```{r}
+plot(subset1$d2,subset1$d5,col=c(3),main='High vs Volume stock',xlab='High stock',ylab='Volume stock')
+```
+
+### Low Attribute Vs Close Attribute
+
+```{r}
+#
+plot(subset1$d3,subset1$d4,col=c(3),main='Low vs Close stock',xlab='Low stock',ylab='Close stock')
+```
+
+Column {data-width=900}
+-----------------------------------------------------------------------
+
+Link to [Introduction]
+
+### Low Attribute Vs Volume Attribute
+
+```{r}
+plot(subset1$d3,subset1$d5,col=c(3),main='Low vs Volume stock',xlab='Low stock',ylab='Volume stock')
+```
+
+### Close Attribute Vs Volume Attribute
+
+```{r}
+plot(subset1$d4,subset1$d5,col=c(3),main='Close vs Volume stock',xlab='Close stock',ylab='Volume stock')
+```
+
+### Multivariate Analysis
+
+```{r}
+#heat map
+hea=data.frame(subd$d1,subd$d2,subd$d3,subd$d4,subd$d5)
+colnames(hea)=c('Open','High','Low','Close','Volume')
+head(hea)
+he=cor(hea)
+levelplot(he,main="Correalation Heatmap of Tesla Attribute",xlab="Attributes",ylab="Attributes")
+
+```
+
+
