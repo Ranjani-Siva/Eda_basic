@@ -1,0 +1,93 @@
+---
+title: "Untitled"
+author: "23CSEG27"
+date: "2024-04-04"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(MASS)
+library(lattice)
+Orange
+sub=data.frame(Orange$Tree,Orange$age,Orange$circumference)
+head(sub)
+```
+
+```{r}
+#Check the null values is in dataset
+sum(is.na(sub))
+```
+
+```{r}
+#Summary of the dataset
+summary(sub)
+```
+
+```{r}
+#Structure of the dataset
+str(sub)
+```
+
+```{r}
+#Creating attribute radius and diameter with circumference of tree
+sub1=sub %>%
+  mutate(radius = sub$Orange.circumference/6.28)
+sub2=sub %>%
+  mutate(diameter = sub$Orange.circumference/3.14)
+```
+
+```{r}
+#Univariant
+hist(sub$Orange.circumference, col = '#F52581',main="circumference of the tree",xlab="circumference",ylab="frequency")
+```
+
+
+```{r}
+hist(sub$Orange.age, col='pink',main="Age of the tree",xlab="age",ylab="frequency")
+```
+
+```{r}
+hist(sub2$diameter, col='orange',main="Diameter of the tree" ,xlab="Diameter", ylab="frequency")
+```
+
+```{r}
+#Bi variant
+plot(sub2$Orange.Tree,sub2$Orange.age,col='purple',xlab=('tree varity'),ylab=('No of ages'),main=('The tree varity with respect to age'))
+```
+
+
+```{r}
+plot(sub2$Orange.Tree,sub2$Orange.circumference,col='#F29034',xlab='Tree varity',ylab=('Circumference'),main=('The tree varity with respect to circumference'))
+```
+
+
+```{r}
+plot(sub2$Orange.Tree,sub2$diameter,col='brown',xlab='Tree varity',ylab=('Diameter'),main=('The tree varity with respect to diameter'))
+```
+
+
+```{r}
+plot(sub2$Orange.age,sub2$Orange.circumference,col='red',xlab='Age of the tree',ylab=('Circumference'),main=('The age with respect to circumference'))
+```
+
+
+```{r}
+plot(sub2$Orange.age,sub2$diameter,col='green',xlab='Age of the tree',ylab=('Diameter'),main=('The age with respect to diameter'))
+is.numeric(Orange$circumference)
+```
+
+
+```{r}
+#multivariant
+hi = sub2[c("Orange.age","Orange.circumference","diameter")]
+hea = cor(hi)
+levelplot(hea,main = "Correlation Heatmap of Orange Attributes",xlab = "Attributes", ylab = "Attributes",
+          col.regions = colorRampPalette(c("white", "red")))
+```
+
+
