@@ -1,0 +1,54 @@
+---
+title: "manipulation"
+author: "23CSEG27"
+date: "2024-01-03"
+output: word_document
+---
+```{r}
+install.packages("ggplot2")
+install.packages("dplyr")
+library(ggplot2)
+library(dplyr)
+attach(diamonds)
+#filter
+data=diamonds%>%
+  filter(price>4000)
+head(data)
+```
+
+```{r}
+#select
+dat=diamonds %>%
+  filter(color == "E")
+head(dat)
+```
+
+```{r}
+#mutate
+dat2=diamonds %>%
+  mutate(Quality = case_when(cut == "Ideal" ~ "A",cut == "Premium" ~ "B",cut == "Very Good" ~ "C",cut == "Good" ~ "D",cut == "Fair" ~ "E"))
+head(dat2)
+```
+
+```{r}
+#Arrange the dataset according to carat attribute
+dat3=diamonds %>%
+  arrange(carat)
+head(dat3)
+```
+
+```{r}
+#At which price most of the customer purchase diamonds
+dat4=diamonds %>%
+  summarize(mean(price))
+head(dat4)
+```
+
+```{r}
+#Group by carat attribute more connected to price for diamonds dataset
+dat5=diamonds %>%
+  group_by(carat)
+head(dat5)
+```
+
+

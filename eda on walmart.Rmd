@@ -1,0 +1,185 @@
+---
+title: "Ex.1 DMA"
+author: "23CSEG27"
+date: "2024-04-13"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#The EDA on Walmart dataset
+#library(c('lattice','dplyr','ggplot2','MASS','lubridate'))
+library(dplyr)
+library(ggplot2)
+library(MASS)
+library(lubridate)
+# Read the dataset
+data=read.csv('C:\\Users\\India\\Documents\\Walmart (1).csv')
+head(data)
+```
+
+```{r}
+#Structure of the data
+str(data)
+```
+
+```{r}
+#summary of the data
+summary(data)
+```
+
+```{r}
+# Change date type
+data<- data %>% mutate (Date = dmy(Date))
+str(data)
+
+# Filtering month,date and year
+Weekday<- day(data$Date)
+Months<- month(data$Date)
+Year <- year(data$Date)
+
+#mutate day,month,year column
+data<-data %>% cbind(Weekday)
+data<-data %>% cbind(Months)
+data<-data %>% cbind(Year)
+head(data)
+```
+
+
+```{r}
+# Check the null values is in dataset or not
+sum(is.na(data))
+```
+
+```{r}
+#Assumption 1 and 3 subset1
+sub1 <- data.frame(data$Months,data$Year,data$Weekly_Sales,data$CPI)
+head(sub1)
+```
+
+```{r}
+#Assumption1 subset2
+sub2 <- data.frame(data$Weekday,data$Months,data$Year,data$Store,data$Unemployment)
+head(sub2)
+```
+
+```{r}
+#EDA
+#Univariate
+# weekly sales
+ggplot(data=sub1,aes(x=data.Weekly_Sales))+
+ geom_histogram(bins=20,color='red',fill='white',aes(y=after_stat(density)))+
+  geom_density(alpha=0.5)+
+  labs(title = "Fig 1.1 Distribution of Weekly sales", x="Weekly Sales",y="Frequency")+
+  scale_x_continuous(labels=scales::comma)+
+  scale_y_continuous(labels=scales::comma)+
+  theme(plot.title=element_text(hjust=0.5))
+```
+
+```{r}
+# Consumer Price Index
+ggplot(data=sub1,aes(x=data.CPI))+
+  geom_histogram(bins=25,color='red',fill='white',aes(y=after_stat(density)))+
+  geom_density(alpha=0.5)+
+  labs(title = "Fig 1.2 Distribution of Consumer Price Index",x="Consumer Price Index",y="Frequency")+
+  scale_x_continuous(labels=scales::comma)+
+  scale_y_continuous(labels=scales::comma)+
+  theme(plot.title=element_text(hjust=0.5))
+```
+
+```{r}
+# Weekdays of the sales
+ggplot(data=sub2,aes(x=data.Weekday))+
+  geom_histogram(bins=30,color='red',fill='white',aes(y=after_stat(density)))+
+  geom_density(alpha=0.5)+
+  labs(title = "Fig 1.3 Distribution of Weekdays in store",x="Weekdays",y="Frequency")+
+  scale_x_continuous(labels=scales::comma)+
+  scale_y_continuous(labels=scales::comma)+
+  theme(plot.title=element_text(hjust=0.5))
+```
+
+```{r}
+# Month of the stores
+ggplot(data=sub1,aes(x=data.Months))+
+  geom_histogram(bins=12,color='red',fill='white',aes(y=after_stat(density)))+
+  geom_density(alpha=0.5)+
+  labs(title = "Fig 1.4 Distribution of Month",x="Month",y="Frequency")+
+  scale_x_continuous(labels=scales::comma)+
+  scale_y_continuous(labels=scales::comma)+
+  theme(plot.title=element_text(hjust=0.5))
+```
+
+```{r}
+#Store wise sales
+ggplot(data=sub2,aes(x=data.Store))+
+  geom_histogram(bins=7,color='red',fill='white',aes(y=after_stat(density)))+
+  geom_density(alpha=0.5)+
+  labs(title = "Fig 1.5 Distribution of Store",x="Store",y="Frequency")+
+  scale_x_continuous(labels=scales::comma)+
+  scale_y_continuous(labels=scales::comma)+
+  theme(plot.title=element_text(hjust=0.5))
+```
+
+```{r}
+# Unemployment ratio
+ggplot(data=sub2,aes(x=data.Unemployment))+
+  geom_histogram(bins=15,color='red',fill='white',aes(y=after_stat(density)))+
+  geom_density(alpha=0.5)+
+  labs(title = "Fig 1.6 Distribution of Unemployment ratio",x="Unemployment ratio",y="Frequency")+
+  scale_x_continuous(labels=scales::comma)+
+  scale_y_continuous(labels=scales::comma)+
+  theme(plot.title=element_text(hjust=0.5))
+```
+
+```{r}
+# Store of Unemployment by year attribute
+ggplot(data=sub2,aes(y=data.Unemployment,x=data.Store))+
+  geom_boxplot(aes(fill=factor(data.Year)))+
+  coord_flip()+
+  labs(title = "Fig 1.7 Store of Unemployment by year",x="Unemployment",y="Store")
+```
+
+
+```{r}
+# Bivariate
+# Assumption 1
+ggplot(data=sub1,aes(x=data.Months,y=data.Weekly_Sales))+
+  geom_point(aes(color=factor(data.Year)))+
+  labs(title =' Fig 1.8 Month wise Weekly Sales by Year',x='Month of the sales',y='Weekly sales')+
+  scale_y_continuous(labels=scales::comma)+
+  theme(plot.title = element_text(hjust =0.5))
+
+```
+
+```{r}
+# Assumption 2
+ggplot(data=sub2,aes(x=data.Store,y=data.Unemployment))+
+  geom_point(aes(color=factor(data.Year)))+
+  labs(title =' Fig 1.9 Store Vs Unemployment of the shop',x='Month of the year',y='Weekly sales')+
+  scale_y_continuous(labels=scales::comma)+
+  theme(plot.title = element_text(hjust =0.5))
+```
+
+```{r}
+# Assumption 3
+ggplot(data=sub1,aes(x=data.CPI,y=data.Weekly_Sales))+
+  geom_point(aes(color=factor(data.Year)))+
+  labs(title =' Fig 1.10 Consumer Price Index Vs Weekly Sales',x='Consumer Price Index',y='Weekly sales')+
+  scale_y_continuous(labels=scales::comma)+
+  theme(plot.title = element_text(hjust =0.5))
+```
+
+```{r}
+#Corelation
+library(reshape2)
+h1=data[,c("Store","Weekly_Sales","Holiday_Flag","Temperature","Fuel_Price","CPI","Unemployment","Weekday","Months","Year")]
+corre_matrix=cor(h1)
+ggplot(melt(corre_matrix),aes(x = Var1, y = Var2,fill=value))+
+  geom_tile()+
+  scale_fill_gradient2(low='white',high='red',midpoint=0)+
+  theme(axis.text.x=element_text(angle=90,vjust=0.5,hjust=1),panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+```
