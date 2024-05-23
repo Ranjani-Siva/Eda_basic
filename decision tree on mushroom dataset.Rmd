@@ -1,0 +1,130 @@
+---
+title: "Decision tree algorithm in Mushroom dataset"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: scroll
+    theme: simplex
+    social: menu
+    source_code: embed
+---
+
+
+```{r setup, include=FALSE}
+
+library(RColorBrewer)
+library(data.table)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(stringr)
+library(DT)
+library(plotly)
+library(arules)
+library(arulesViz)
+library(visNetwork)
+library(igraph)
+library(kableExtra)
+library(rCBA)
+library(rpart)
+library(rpart.plot)
+download.file("https://ibm.box.com/shared/static/dpdh09s70abyiwxguehqvcq3dn0m7wve.data", "mushroom.data")
+```
+
+# About Mushroom Dataset
+
+
+### Dataset Description
+```{r}
+print("The Mushroom transactions data set includes descriptions of hypothetical samples corresponding to 23 species of gilled mushrooms in the Agaricus and Lepiota Family.")
+```
+Link to [Statistical Inference]
+
+# Statistical Inference
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### DataStructure
+```{r}
+mushrooms <- read.csv("mushroom.data", header = FALSE)
+str(mushrooms)
+```
+
+### assign class names to factor
+```{r}
+colnames(mushrooms) <- c("Class","cap.shape","cap.surface","cap.color","bruises","odor","gill.attachment","gill.spacing",
+                         "gill.size","gill.color","stalk.shape","stalk.root","stalk.surface.above.ring",
+                         "stalk.surface.below.ring","stalk.color.above.ring","stalk.color.below.ring","veil.type","veil.color",
+                         "ring.number","ring.type","print","population","habitat")
+# Define the factor names for "Class"
+levels(mushrooms$Class) <- c("Edible","Poisonous")
+# Define the factor names for "odor"
+levels(mushrooms$odor) <- c("Almonds","Anise","Creosote","Fishy","Foul","Musty","None","Pungent","Spicy")
+
+# Define the factor names for "print"
+levels(mushrooms$print) <- c("Black","Brown","Buff","Chocolate","Green","Orange","Purple","White","Yellow")
+head(mushrooms)
+```
+
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+
+### Summary
+```{r}
+summary(mushrooms)
+```
+
+### decision tree growth
+
+```{r}
+myDecisionTree <- rpart(Class ~ ., data = mushrooms, method = "class")
+# Print out a summary of our created model.
+print(myDecisionTree)
+```
+
+
+Link to [Decision tree Algorthm]
+
+# Decision tree Algorthm
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### decision tree algorthm
+```{r}
+rpart.plot(myDecisionTree, type = 3, extra = 2, under = TRUE, faclen=5, cex = .75)
+```
+
+
+
+### new case
+```{r}
+newCase  <- mushrooms[10,-1]
+newCase
+```
+### prediction
+```{r}
+predict(myDecisionTree, newCase, type = "class")
+```
+
+### confusion matrix
+```{r}
+train_ind <- sample(c(1:nrow(mushrooms)), size = 10)
+n <- nrow(mushrooms)
+smp_size <- floor(0.75 * n)
+## set the seed to make your partition reproductible
+set.seed(123)
+train_ind <- sample(c(1:n), size = smp_size)
+
+mushrooms_train <- mushrooms[train_ind, ]
+mushrooms_test <- mushrooms[-train_ind, ]
+newDT <- rpart(Class ~ ., data = mushrooms_train, method = "class")
+result <- predict(newDT, mushrooms_test[,-1], type = "class")
+table(mushrooms_test$Class, result)
+```
+
+
+Link to [About Mushroom Dataset]
